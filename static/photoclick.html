@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>Click a picture!</title>
+	<style type="text/css">
+		body {
+			font-family: sans-serif;
+		}
+
+		h2,h3 {
+			margin-top: 0;
+		}
+
+		form {
+			margin-top: 15px;
+		}
+
+		form>input {
+			margin-right: 15px;
+		}
+
+		#results {
+			margin: 20px;
+			padding: 20px;
+			border: 1px solid;
+			background: white;
+
+		}
+
+		#results2 {
+			margin: 20px;
+			padding: 20px;
+			border: 1px solid;
+			background: white;
+
+		}
+
+		#striped-border {
+		border: 1px dashed #000;
+		width: 50%;
+		margin: auto;
+		margin-top: 5%;
+		margin-bottom: 5%;
+		}
+
+	</style>
+	<script src="https://code.jquery.com/jquery-3.3.1.min.js"
+		integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+	<h1>This is a demo!</h1>
+	<div id="my_camera"></div>
+	<script type="text/javascript" src="static/webcam.js"></script>
+	<script language="JavaScript">
+		Webcam.set({
+			width: 320,
+			height: 240,
+			image_format: 'jpeg',
+			jpeg_quality: 90
+		});
+		Webcam.attach('#my_camera');
+	</script>
+	<script language="JavaScript">
+		function myFunction() {
+		  var x = document.getElementById("myInput").value;
+		  var x_checked = Number(x);
+
+		  if (isNaN(x_checked)) {
+		  document.getElementById("demo").innerHTML = "Wrong input.";
+			return NaN
+		  }
+		  else
+		  {
+		  if (1>x_checked || x_checked>5){
+		  document.getElementById("demo").innerHTML = "Please choose a number between 1 and 5 neighbors,";
+		  return NaN;
+		  }
+		  else {
+			document.getElementById("demo").innerHTML = "You are selecting " + x_checked +" nearest neighbors.";
+			return x_checked;
+		  }
+		  }
+		}
+
+		function myFunction2() {
+
+		  var x2 = document.getElementById("myInput2").value;
+		  var x2_checked = Number(x2);
+
+		  if (isNaN(x2_checked)) {
+		  document.getElementById("demo2").innerHTML = "Wrong input.";
+		  return NaN
+		  }
+		  else
+		  {
+		  if (0.8<x2_checked || x2_checked<0.001){
+		  document.getElementById("demo2").innerHTML = "Please choose a value between 0.001 and 0.8 ";
+		  return NaN
+		  }
+		  else {
+			document.getElementById("demo2").innerHTML = "You are selecting " + x2_checked +" as outlier threshold.";
+			return x2_checked;
+		  }
+		  }
+		}
+
+		function take_snapshot() {
+			Webcam.snap(function (data_uri) {
+				document.getElementById('results').innerHTML =
+					'<h2>Here is your image:</h2>' +
+					'<img src="' + data_uri + '"/>';
+				$.ajax({
+					type: "GET",
+					data: "img_as_str=" + encodeURIComponent(data_uri)+"&limit="+myFunction()+"&thresh="+myFunction2(),
+					url: "/test-get-nearest-neighbour",
+					contentType: false,
+					processData: false,
+					success: function (result) {
+
+						if (result[1]<=Number(document.getElementById('myInput').value)){
+						document.getElementById('results2').innerHTML =
+						"Sorry .. We think it is the first time we see you :( " ;
+						}
+
+						else {
+
+						document.getElementById('results2').innerHTML = "Judging by the nearest "+
+						document.getElementById('myInput').value+
+						" neighbours we have seen, we think you are "+
+						result[1];
+
+						for (var x = 0; x < result[0].length; x++) {
+						document.getElementById('results2').innerHTML +=
+    					'<h4>Here is your doppel number '+x+':</h4>' +
+					    '<img src="data:image/png;base64,' + result[0][x][0] + '" width="720" height="480"/>' +
+					    '<h4>The celebrity\'s name is :' + result[0][x][2] + '</h4>'+
+					    '<hr size="5" width="50%" color="black">';
+							}
+						}
+
+					}
+				});
+			});
+		}
+	</script>
+<br>
+<input type="button" onclick="take_snapshot()" value="Snap">
+	<br><br>
+	<input type="text" id="myInput" size="50" placeholder="Number of nearest neighbors to check .." oninput="myFunction()">
+	<p id="demo"></p>
+
+	<input type="text" id="myInput2" size="50" placeholder="Outlier threshold to apply" oninput="myFunction2()">
+	<p id="demo2"></p>
+<br>
+<div id="results">Snapshot...</div>
+<div id="results2">Nearest...</div>
+</body>
+
+</html>

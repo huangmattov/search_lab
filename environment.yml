@@ -1,0 +1,24 @@
+name: search-lab
+
+channels:
+- conda-forge
+
+
+dependencies:
+- faiss-cpu 
+- pytest
+- ipykernel
+- pyyaml
+- nmslib
+- pandas
+- fastapi
+- uvicorn
+- gunicorn
+- python-multipart
+- aiofiles
+- azure-storage-blob
+- tqdm
+- pip
+- pip:
+  - facenet-pytorch
+  - simple_image_download
