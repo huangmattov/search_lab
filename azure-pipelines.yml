@@ -8,32 +8,16 @@ trigger:
 resources:
 - repo: self
 
+pool:
+  vmImage: 'ubuntu-1604' # set to windows-latest or another Windows vmImage for Windows builds
+
 variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '4163bc1d-49eb-4e59-b13a-af7f2dd1fde9'
-  imageRepository: 'huangmattovsearchlab'
-  containerRegistry: 'spacegameacr92.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
-  tag: '$(Build.BuildId)'
+  imageName: 'pipelines-javascript-docker'
 
-  # Agent VM image name
-  vmImageName: 'ubuntu-latest'
-
-stages:
-- stage: Build
-  displayName: Build and push stage
-  jobs:
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: $(vmImageName)
-    steps:
-    - task: Docker@2
-      displayName: Build and push an image to container registry
-      inputs:
-        command: buildAndPush
-        repository: $(imageRepository)
-        dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerRegistryServiceConnection)
-        tags: |
-          $(tag)
+steps:
+- task: Docker@2
+  displayName: Build an image
+  inputs:
+    repository: $(imageName)
+    command: build
+    Dockerfile: app/Dockerfile
