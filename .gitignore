@@ -5,3 +5,5 @@ __pycache__/
 ~/.DS_Store
 ~/*.py[co]
 *.py[co]
+.conda_envs_dir_test
+search-lab/
