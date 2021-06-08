@@ -9,7 +9,7 @@ resources:
 - repo: self
 
 pool:
-  vmImage: 'ubuntu-1604' # set to windows-latest or another Windows vmImage for Windows builds
+  vmImage: 'windows-latest' # set to windows-latest or another Windows vmImage for Windows builds
 
 variables:
   imageName: 'pipelines-javascript-docker'
